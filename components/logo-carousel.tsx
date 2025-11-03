@@ -7,15 +7,20 @@ export function LogoCarousel() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   const baseLogos = [
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img1-atVICPlSTNGk24yeY7g0W7WKBoVcEl.png",
     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img3-TGTWKqs9CN3XADiyJbQNdNhXfBdVdg.png",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img2-ylf2ytav4bcAWMDPy81Sh4A8pzPO7n.png",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img4-w33AuLaO8F86Si90SCyzhn7G5FwOVT.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img7-maWQtWDb6yjQ8G9Dqch0zKBlTB26Ii.png",
     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img1-atVICPlSTNGk24yeY7g0W7WKBoVcEl.png",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img3-TGTWKqs9CN3XADiyJbQNdNhXfBdVdg.png",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img2-ylf2ytav4bcAWMDPy81Sh4A8pzPO7n.png",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img4-w33AuLaO8F86Si90SCyzhn7G5FwOVT.png",
     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img5-tRMrHRXZwYF5HHtg1IfYSQRhQkkDBM.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img2-ylf2ytav4bcAWMDPy81Sh4A8pzPO7n.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img6-iX6rs2y3fgbqtXSuR3tcDhpdBrgoPG.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img4-w33AuLaO8F86Si90SCyzhn7G5FwOVT.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img1-atVICPlSTNGk24yeY7g0W7WKBoVcEl.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img6-iX6rs2y3fgbqtXSuR3tcDhpdBrgoPG.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img3-TGTWKqs9CN3XADiyJbQNdNhXfBdVdg.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img7-maWQtWDb6yjQ8G9Dqch0zKBlTB26Ii.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img5-tRMrHRXZwYF5HHtg1IfYSQRhQkkDBM.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img2-ylf2ytav4bcAWMDPy81Sh4A8pzPO7n.png",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img4-w33AuLaO8F86Si90SCyzhn7G5FwOVT.png",
   ]
 
   // Duplicate the array to create seamless loop

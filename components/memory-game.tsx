@@ -219,7 +219,7 @@ export function MemoryGame() {
           }}
         >
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/coin-1zW1Ybi2CUhwHd7xYwg5wDOLqAtR9F.png"
+            src="/images/design-mode/coin(1).png"
             alt="Coin"
             width={80}
             height={80}

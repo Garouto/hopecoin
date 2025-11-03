@@ -99,7 +99,7 @@ export function HeroSection() {
         <header className="flex items-center justify-between py-6">
           <div className="flex items-center gap-3">
             <Image
-              src="/images/design-mode/logo(3).gif"
+              src="/images/design-mode/logo(4).gif"
               alt="HOPE COIN Logo"
               width={50}
               height={50}
@@ -323,7 +323,7 @@ export function HeroSection() {
             {/* Center - Logo */}
             <div className="flex-shrink-0 animate-float">
               <Image
-                src="/images/design-mode/logo(3).gif"
+                src="/images/design-mode/logo(4).gif"
                 alt="HOPE COIN Meditation Monk"
                 width={400}
                 height={400}

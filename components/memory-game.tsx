@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
+import { createClient } from "@/lib/supabase/client"
 
 const gameImages = [
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img1-atVICPlSTNGk24yeY7g0W7WKBoVcEl.png",
@@ -28,12 +29,11 @@ interface CoinAnimation {
 }
 
 interface LeaderboardEntry {
+  id: string
   nickname: string
   moves: number
-  date: string
+  created_at: string
 }
-
-const LEADERBOARD_KEY = "hopecoin-memory-leaderboard"
 
 export function MemoryGame() {
   const [cards, setCards] = useState<Card[]>([])
@@ -49,10 +49,36 @@ export function MemoryGame() {
   const [nickname, setNickname] = useState("")
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [isDatabaseReady, setIsDatabaseReady] = useState(false)
+  const [databaseError, setDatabaseError] = useState<string | null>(null)
+
+  const supabase = createClient()
 
   useEffect(() => {
-    loadLeaderboard()
-  }, [])
+    fetchLeaderboard()
+
+    if (isDatabaseReady) {
+      const channel = supabase
+        .channel("leaderboard-changes")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "leaderboard",
+          },
+          () => {
+            console.log("[v0] New leaderboard entry detected, refreshing...")
+            fetchLeaderboard()
+          },
+        )
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [isDatabaseReady])
 
   useEffect(() => {
     const audio = new Audio(
@@ -137,42 +163,58 @@ export function MemoryGame() {
     }
   }, [matchedPairs, moves])
 
-  const loadLeaderboard = () => {
+  const fetchLeaderboard = async () => {
     try {
-      const stored = localStorage.getItem(LEADERBOARD_KEY)
-      if (stored) {
-        const data = JSON.parse(stored) as LeaderboardEntry[]
-        setLeaderboard(data.sort((a, b) => a.moves - b.moves))
+      const { data, error } = await supabase
+        .from("leaderboard")
+        .select("*")
+        .order("moves", { ascending: true })
+        .order("created_at", { ascending: true })
+        .limit(10)
+
+      if (error) {
+        console.error("[v0] Error fetching leaderboard:", error)
+        if (error.message.includes("does not exist") || error.message.includes("schema cache")) {
+          setDatabaseError("Database table not set up yet. Please run the SQL script in the scripts folder.")
+          setIsDatabaseReady(false)
+        }
+        return
+      }
+
+      if (data) {
+        console.log("[v0] Leaderboard fetched:", data)
+        setLeaderboard(data)
+        setIsDatabaseReady(true)
+        setDatabaseError(null)
       }
     } catch (error) {
-      console.error("[v0] Error loading leaderboard:", error)
+      console.error("[v0] Error fetching leaderboard:", error)
+      setIsDatabaseReady(false)
     }
   }
 
-  const saveToLeaderboard = (playerNickname: string, playerMoves: number) => {
+  const saveToLeaderboard = async (playerNickname: string, playerMoves: number) => {
+    if (!isDatabaseReady) {
+      console.log("[v0] Database not ready, skipping save")
+      setShowNicknameModal(false)
+      return
+    }
+
     try {
-      const newEntry: LeaderboardEntry = {
+      const { error } = await supabase.from("leaderboard").insert({
         nickname: playerNickname,
         moves: playerMoves,
-        date: new Date().toISOString(),
+      })
+
+      if (error) {
+        console.error("[v0] Error saving to leaderboard:", error)
+        return
       }
 
-      const updatedLeaderboard = [...leaderboard, newEntry].sort((a, b) => a.moves - b.moves).slice(0, 10)
-
-      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updatedLeaderboard))
-      setLeaderboard(updatedLeaderboard)
+      console.log("[v0] Score saved successfully!")
+      await fetchLeaderboard()
     } catch (error) {
       console.error("[v0] Error saving to leaderboard:", error)
-    }
-  }
-
-  const handleNicknameSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (nickname.trim()) {
-      saveToLeaderboard(nickname.trim(), moves)
-      setShowNicknameModal(false)
-      setShowLeaderboard(true)
-      setNickname("")
     }
   }
 
@@ -272,6 +314,14 @@ export function MemoryGame() {
     }, 2000)
   }
 
+  const handleNicknameSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (nickname.trim()) {
+      await saveToLeaderboard(nickname, moves)
+      setShowNicknameModal(false)
+    }
+  }
+
   return (
     <section className="relative py-12 px-4 bg-gradient-to-b from-background to-background/50 overflow-hidden">
       {coins.map((coin) => (
@@ -304,21 +354,33 @@ export function MemoryGame() {
               Pairs: <span className="font-bold">{matchedPairs}/6</span>
             </div>
           </div>
-          <button
-            onClick={() => setShowLeaderboard(!showLeaderboard)}
-            className="mt-4 px-4 py-2 text-sm bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/30 transition-colors border border-purple-500/30"
-          >
-            {showLeaderboard ? "Hide" : "Show"} Leaderboard
-          </button>
+          {isDatabaseReady && (
+            <button
+              onClick={() => setShowLeaderboard(!showLeaderboard)}
+              className="mt-4 px-4 py-2 text-sm bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/30 transition-colors border border-purple-500/30"
+            >
+              {showLeaderboard ? "Hide" : "Show"} Leaderboard
+            </button>
+          )}
+          {databaseError && (
+            <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg max-w-md mx-auto">
+              <p className="text-amber-400 text-sm mb-2">⚠️ Leaderboard Setup Required</p>
+              <p className="text-gray-400 text-xs">
+                Run the SQL script <code className="text-amber-400">scripts/001_create_leaderboard.sql</code> to enable
+                the global leaderboard feature.
+              </p>
+            </div>
+          )}
         </div>
 
-        {showLeaderboard && leaderboard.length > 0 && (
+        {showLeaderboard && isDatabaseReady && leaderboard.length > 0 && (
           <div className="mb-8 bg-gradient-to-br from-purple-900/30 to-amber-900/20 rounded-xl border border-amber-400/30 p-6 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-amber-400 mb-4 text-center">Top Players</h3>
+            <h3 className="text-2xl font-bold text-amber-400 mb-4 text-center">🏆 Global Leaderboard</h3>
+            <p className="text-gray-400 text-sm text-center mb-4">Live rankings from all players worldwide</p>
             <div className="space-y-2">
               {leaderboard.map((entry, index) => (
                 <div
-                  key={index}
+                  key={entry.id}
                   className="flex items-center justify-between bg-background/50 rounded-lg p-3 border border-amber-400/20"
                 >
                   <div className="flex items-center gap-3">
@@ -395,19 +457,27 @@ export function MemoryGame() {
           ))}
         </div>
 
-        {matchedPairs === 6 && !showNicknameModal && (
-          <div className="text-center animate-fade-in">
-            <button
-              onClick={initializeGame}
-              className="px-8 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-background font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-amber-400/30"
-            >
-              Play Again
-            </button>
+        {matchedPairs === 6 && !isDatabaseReady && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-gradient-to-br from-purple-900/90 to-background border-2 border-amber-400 rounded-2xl p-8 max-w-md w-full animate-fade-in">
+              <h3 className="text-3xl font-bold text-amber-400 mb-4 text-center">Congratulations!</h3>
+              <p className="text-white text-center mb-2">You completed the game in</p>
+              <p className="text-4xl font-bold text-amber-400 text-center mb-6">{moves} moves</p>
+              <p className="text-gray-400 text-sm text-center mb-6">
+                Set up the database to save your score to the global leaderboard!
+              </p>
+              <button
+                onClick={initializeGame}
+                className="w-full px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-background font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-amber-400/30"
+              >
+                Play Again
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {showNicknameModal && (
+      {showNicknameModal && isDatabaseReady && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-gradient-to-br from-purple-900/90 to-background border-2 border-amber-400 rounded-2xl p-8 max-w-md w-full animate-fade-in">
             <h3 className="text-3xl font-bold text-amber-400 mb-4 text-center">Congratulations!</h3>

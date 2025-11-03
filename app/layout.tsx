@@ -4,9 +4,10 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "HOPE COIN - Your Token to the Moon",
-  description: "Join the bullrun with HOPE COIN token on Solana",
-  generator: "v0.app",
+  title: "HOPE COIN - A New Dawn in Crypto",
+  description:
+    "Embrace hope and patience on your spiritual journey through cryptocurrency.",
+  generator: "who ?",
   icons: {
     icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-3PNnxW2y1jYIH6FQC2rxcSJUI5HetC.png",
   },

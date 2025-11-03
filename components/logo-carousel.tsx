@@ -1,0 +1,52 @@
+"use client"
+
+import Image from "next/image"
+import { useState } from "react"
+
+export function LogoCarousel() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
+  const baseLogos = Array(8).fill(
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img1-atVICPlSTNGk24yeY7g0W7WKBoVcEl.png",
+  )
+
+  // Duplicate the array to create seamless loop
+  const logos = [...baseLogos, ...baseLogos]
+
+  return (
+    <section className="w-full bg-[#0a0a0f] py-12 overflow-hidden border-t border-[#ffcc4d]/20">
+      <div className="relative">
+        <div
+          className="flex gap-6 animate-scroll-seamless"
+          style={{
+            animationPlayState: hoveredIndex !== null ? "paused" : "running",
+          }}
+        >
+          {logos.map((logo, index) => (
+            <div
+              key={index}
+              className="flex-shrink-0 transition-all duration-300 ease-out"
+              style={{
+                transform: hoveredIndex === index ? "scale(1.2)" : "scale(1)",
+                zIndex: hoveredIndex === index ? 10 : 1,
+              }}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <div className="relative w-[130px] h-[130px] rounded-xl border-[3px] border-[#ffcc4d]/40 overflow-hidden bg-gradient-to-br from-[#7c3aed]/20 to-black/50 backdrop-blur-sm hover:border-[#ffcc4d] hover:shadow-[0_0_25px_rgba(255,204,77,0.6)] transition-all duration-300 p-1">
+                <div className="w-full h-full rounded-lg overflow-hidden border border-[#ffcc4d]/20">
+                  <Image
+                    src={logo || "/placeholder.svg"}
+                    alt={`Partner logo ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

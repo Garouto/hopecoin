@@ -99,7 +99,7 @@ export function HeroSection() {
         <header className="flex items-center justify-between py-6">
           <div className="flex items-center gap-3">
             <Image
-              src="/images/design-mode/logo(4).gif"
+              src="/images/design-mode/favicon.png"
               alt="HOPE COIN Logo"
               width={50}
               height={50}
@@ -195,7 +195,9 @@ export function HeroSection() {
             {/* Social icons */}
             <div className="flex gap-3 justify-center">
               <a
-                href="#"
+                href="https://x.com/home"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
               >
                 <Image
@@ -207,7 +209,9 @@ export function HeroSection() {
                 />
               </a>
               <a
-                href="#"
+                href="https://t.me/hopecoin"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
               >
                 <Image
@@ -219,7 +223,9 @@ export function HeroSection() {
                 />
               </a>
               <a
-                href="#"
+                href="https://dexscreener.com/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
               >
                 <Image
@@ -231,12 +237,28 @@ export function HeroSection() {
                 />
               </a>
               <a
-                href="#"
+                href="https://www.dextools.io/app/en/meme-board"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
               >
                 <Image
                   src="/images/design-mode/dextools.png"
                   alt="DexTools"
+                  width={24}
+                  height={24}
+                  className="w-full h-full object-contain"
+                />
+              </a>
+              <a
+                href="https://raydium.io/swap/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
+              >
+                <Image
+                  src="/images/design-mode/raydium.jpg"
+                  alt="Raydium"
                   width={24}
                   height={24}
                   className="w-full h-full object-contain"
@@ -270,7 +292,9 @@ export function HeroSection() {
               {/* Social icons */}
               <div className="flex gap-4">
                 <a
-                  href="#"
+                  href="https://x.com/home"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
                 >
                   <Image
@@ -282,7 +306,9 @@ export function HeroSection() {
                   />
                 </a>
                 <a
-                  href="#"
+                  href="https://t.me/hopecoin"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
                 >
                   <Image
@@ -294,7 +320,9 @@ export function HeroSection() {
                   />
                 </a>
                 <a
-                  href="#"
+                  href="https://dexscreener.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
                 >
                   <Image
@@ -306,7 +334,9 @@ export function HeroSection() {
                   />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.dextools.io/app/en/meme-board"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
                 >
                   <Image
@@ -317,13 +347,14 @@ export function HeroSection() {
                     className="w-full h-full object-contain"
                   />
                 </a>
+                
               </div>
             </div>
 
             {/* Center - Logo */}
             <div className="flex-shrink-0 animate-float">
               <Image
-                src="/images/design-mode/logo(4).gif"
+                src="/images/design-mode/logo(5).png"
                 alt="HOPE COIN Meditation Monk"
                 width={400}
                 height={400}

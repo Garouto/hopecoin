@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Embrace hope and patience on your spiritual journey through cryptocurrency.",
   generator: "who ?",
   icons: {
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-NcI4hsIr6z2a1irKLAJeotM9fZmaZ5.png",
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-ge4GW2u9IcsH9955nSTbNypeZrOG6V.png",
   },
 }
 

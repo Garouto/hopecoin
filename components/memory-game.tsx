@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 
@@ -8,6 +10,8 @@ const gameImages = [
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img3-TGTWKqs9CN3XADiyJbQNdNhXfBdVdg.png",
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img2-ylf2ytav4bcAWMDPy81Sh4A8pzPO7n.png",
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img4-w33AuLaO8F86Si90SCyzhn7G5FwOVT.png",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img5-tRMrHRXZwYF5HHtg1IfYSQRhQkkDBM.png",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img6-iX6rs2y3fgbqtXSuR3tcDhpdBrgoPG.png",
 ]
 
 interface Card {
@@ -23,6 +27,14 @@ interface CoinAnimation {
   y: number
 }
 
+interface LeaderboardEntry {
+  nickname: string
+  moves: number
+  date: string
+}
+
+const LEADERBOARD_KEY = "hopecoin-memory-leaderboard"
+
 export function MemoryGame() {
   const [cards, setCards] = useState<Card[]>([])
   const [firstCard, setFirstCard] = useState<number | null>(null)
@@ -33,6 +45,14 @@ export function MemoryGame() {
   const [isChecking, setIsChecking] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [audioUnlocked, setAudioUnlocked] = useState(false)
+  const [showNicknameModal, setShowNicknameModal] = useState(false)
+  const [nickname, setNickname] = useState("")
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [showLeaderboard, setShowLeaderboard] = useState(false)
+
+  useEffect(() => {
+    loadLeaderboard()
+  }, [])
 
   useEffect(() => {
     const audio = new Audio(
@@ -75,7 +95,6 @@ export function MemoryGame() {
       console.log("[v0] Checking match:", { firstCard, secondCard, firstCardData, secondCardData })
 
       if (firstCardData.imageUrl === secondCardData.imageUrl) {
-        // Match found!
         console.log("[v0] Match found!")
 
         playMatchSound()
@@ -94,7 +113,6 @@ export function MemoryGame() {
           setIsChecking(false)
         }, 600)
       } else {
-        // No match - flip back
         console.log("[v0] No match, flipping back")
         setTimeout(() => {
           setCards((prevCards) => {
@@ -111,12 +129,58 @@ export function MemoryGame() {
     }
   }, [firstCard, secondCard, cards])
 
+  useEffect(() => {
+    if (matchedPairs === 6 && moves > 0) {
+      setTimeout(() => {
+        setShowNicknameModal(true)
+      }, 500)
+    }
+  }, [matchedPairs, moves])
+
+  const loadLeaderboard = () => {
+    try {
+      const stored = localStorage.getItem(LEADERBOARD_KEY)
+      if (stored) {
+        const data = JSON.parse(stored) as LeaderboardEntry[]
+        setLeaderboard(data.sort((a, b) => a.moves - b.moves))
+      }
+    } catch (error) {
+      console.error("[v0] Error loading leaderboard:", error)
+    }
+  }
+
+  const saveToLeaderboard = (playerNickname: string, playerMoves: number) => {
+    try {
+      const newEntry: LeaderboardEntry = {
+        nickname: playerNickname,
+        moves: playerMoves,
+        date: new Date().toISOString(),
+      }
+
+      const updatedLeaderboard = [...leaderboard, newEntry].sort((a, b) => a.moves - b.moves).slice(0, 10)
+
+      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updatedLeaderboard))
+      setLeaderboard(updatedLeaderboard)
+    } catch (error) {
+      console.error("[v0] Error saving to leaderboard:", error)
+    }
+  }
+
+  const handleNicknameSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (nickname.trim()) {
+      saveToLeaderboard(nickname.trim(), moves)
+      setShowNicknameModal(false)
+      setShowLeaderboard(true)
+      setNickname("")
+    }
+  }
+
   const initializeGame = () => {
     console.log("[v0] Initializing game")
-    const pairs = gameImages.slice(0, 4)
+    const pairs = gameImages.slice(0, 6)
     const cardPairs = [...pairs, ...pairs]
 
-    // Shuffle cards
     const shuffled = cardPairs
       .map((imageUrl, index) => ({
         id: index,
@@ -133,6 +197,7 @@ export function MemoryGame() {
     setMoves(0)
     setIsChecking(false)
     setCoins([])
+    setShowLeaderboard(false)
   }
 
   const handleCardClick = (index: number) => {
@@ -208,7 +273,7 @@ export function MemoryGame() {
   }
 
   return (
-    <section className="relative py-20 px-4 bg-gradient-to-b from-background to-background/50 overflow-hidden">
+    <section className="relative py-12 px-4 bg-gradient-to-b from-background to-background/50 overflow-hidden">
       {coins.map((coin) => (
         <div
           key={coin.id}
@@ -218,13 +283,7 @@ export function MemoryGame() {
             top: `${coin.y}%`,
           }}
         >
-          <Image
-            src="/images/design-mode/coin(1).png"
-            alt="Coin"
-            width={80}
-            height={80}
-            className="drop-shadow-2xl"
-          />
+          <Image src="/images/design-mode/coin(1).png" alt="Coin" width={80} height={80} className="drop-shadow-2xl" />
         </div>
       ))}
 
@@ -242,10 +301,48 @@ export function MemoryGame() {
               Moves: <span className="font-bold">{moves}</span>
             </div>
             <div className="text-purple-400">
-              Pairs: <span className="font-bold">{matchedPairs}/4</span>
+              Pairs: <span className="font-bold">{matchedPairs}/6</span>
             </div>
           </div>
+          <button
+            onClick={() => setShowLeaderboard(!showLeaderboard)}
+            className="mt-4 px-4 py-2 text-sm bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/30 transition-colors border border-purple-500/30"
+          >
+            {showLeaderboard ? "Hide" : "Show"} Leaderboard
+          </button>
         </div>
+
+        {showLeaderboard && leaderboard.length > 0 && (
+          <div className="mb-8 bg-gradient-to-br from-purple-900/30 to-amber-900/20 rounded-xl border border-amber-400/30 p-6 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-amber-400 mb-4 text-center">Top Players</h3>
+            <div className="space-y-2">
+              {leaderboard.map((entry, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-background/50 rounded-lg p-3 border border-amber-400/20"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-lg font-bold ${
+                        index === 0
+                          ? "text-amber-400"
+                          : index === 1
+                            ? "text-gray-300"
+                            : index === 2
+                              ? "text-amber-600"
+                              : "text-gray-500"
+                      }`}
+                    >
+                      #{index + 1}
+                    </span>
+                    <span className="text-white font-medium">{entry.nickname}</span>
+                  </div>
+                  <div className="text-amber-400 font-bold">{entry.moves} moves</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-4 gap-4 mb-8 max-w-3xl mx-auto">
           {cards.map((card, index) => (
@@ -298,11 +395,8 @@ export function MemoryGame() {
           ))}
         </div>
 
-        {matchedPairs === 4 && (
+        {matchedPairs === 6 && !showNicknameModal && (
           <div className="text-center animate-fade-in">
-            <div className="text-2xl font-bold text-amber-400 mb-4 animate-pulse">
-              Congratulations! You found all pairs in {moves} moves!
-            </div>
             <button
               onClick={initializeGame}
               className="px-8 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-background font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-amber-400/30"
@@ -312,6 +406,52 @@ export function MemoryGame() {
           </div>
         )}
       </div>
+
+      {showNicknameModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-purple-900/90 to-background border-2 border-amber-400 rounded-2xl p-8 max-w-md w-full animate-fade-in">
+            <h3 className="text-3xl font-bold text-amber-400 mb-4 text-center">Congratulations!</h3>
+            <p className="text-white text-center mb-2">You completed the game in</p>
+            <p className="text-4xl font-bold text-amber-400 text-center mb-6">{moves} moves</p>
+            <form onSubmit={handleNicknameSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="nickname" className="block text-gray-300 mb-2 text-sm">
+                  Enter your nickname for the leaderboard:
+                </label>
+                <input
+                  type="text"
+                  id="nickname"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  maxLength={20}
+                  placeholder="Your nickname"
+                  className="w-full px-4 py-3 bg-background/50 border border-amber-400/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 transition-colors"
+                  autoFocus
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  disabled={!nickname.trim()}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-background font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-amber-400/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  Save Score
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNicknameModal(false)
+                    initializeGame()
+                  }}
+                  className="px-6 py-3 bg-gray-700 text-white font-bold rounded-full hover:bg-gray-600 transition-colors"
+                >
+                  Skip
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

@@ -4,7 +4,7 @@ import Image from "next/image"
 
 export function TokenomicsSection() {
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-black via-purple-950/20 to-black py-20 px-6 overflow-hidden">
+    <section className="relative bg-gradient-to-b from-black via-purple-950/20 to-black py-16 px-6 overflow-hidden">
       {/* Grid background */}
       <div className="absolute inset-0 opacity-10">
         <div

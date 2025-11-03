@@ -41,7 +41,7 @@ export function TokenomicsSection() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative w-64 h-64 animate-float">
                   <Image
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-mTr7z9TSBDKKxb1TOCrchiPkVwkb1F.png"
+                    src="/images/design-mode/logo(2).png"
                     alt="HOPE COIN"
                     fill
                     className="object-contain drop-shadow-2xl"

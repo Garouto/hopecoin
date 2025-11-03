@@ -17,7 +17,7 @@ export function AboutSection() {
               {/* Floating monk with decorative elements */}
               <div className="relative z-10">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-ncDHHYBCrv0g9DscrSBtxIylt620lH.png"
+                  src="/images/design-mode/logo(2).png"
                   alt="Hope Coin Monk"
                   width={400}
                   height={400}

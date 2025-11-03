@@ -52,9 +52,16 @@ export function MemoryGame() {
   const [isDatabaseReady, setIsDatabaseReady] = useState(false)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
 
-  const supabase = createClient()
+  const [supabase, setSupabase] = useState<any>(null)
 
   useEffect(() => {
+    const client = createClient()
+    setSupabase(client)
+  }, [])
+
+  useEffect(() => {
+    if (!supabase) return
+
     fetchLeaderboard()
 
     if (isDatabaseReady) {
@@ -78,7 +85,7 @@ export function MemoryGame() {
         supabase.removeChannel(channel)
       }
     }
-  }, [isDatabaseReady])
+  }, [isDatabaseReady, supabase])
 
   useEffect(() => {
     const audio = new Audio(
@@ -164,6 +171,12 @@ export function MemoryGame() {
   }, [matchedPairs, moves])
 
   const fetchLeaderboard = async () => {
+    if (!supabase) {
+      console.log("[v0] Supabase client not available")
+      setIsDatabaseReady(false)
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from("leaderboard")
@@ -194,7 +207,7 @@ export function MemoryGame() {
   }
 
   const saveToLeaderboard = async (playerNickname: string, playerMoves: number) => {
-    if (!isDatabaseReady) {
+    if (!supabase || !isDatabaseReady) {
       console.log("[v0] Database not ready, skipping save")
       setShowNicknameModal(false)
       return

@@ -269,7 +269,7 @@ export function HeroSection() {
             {/* Logo - larger on mobile */}
             <div className="animate-float pt-4">
               <Image
-                src="/images/design-mode/logo(1).gif"
+                src="/images/design-mode/logo(6).png"
                 alt="HOPE COIN Meditation Monk"
                 width={320}
                 height={320}

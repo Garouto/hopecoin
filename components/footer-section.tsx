@@ -9,22 +9,22 @@ export function FooterSection() {
     {
       name: "Twitter",
       icon: "/images/design-mode/twitter.png",
-      url: "#",
+      url: "https://x.com/home",
     },
     {
       name: "Telegram",
       icon: "/images/design-mode/telegram.png",
-      url: "#",
+      url: "https://t.me/",
     },
     {
       name: "DexScreener",
       icon: "/images/design-mode/dexscreener.png",
-      url: "#",
+      url: "https://dexscreener.com/",
     },
     {
       name: "DexTools",
       icon: "/images/design-mode/dextools.png",
-      url: "#",
+      url: "https://www.dextools.io/app/en/meme-board",
     },
   ]
 
@@ -106,6 +106,8 @@ export function FooterSection() {
             <Link
               key={social.name}
               href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-14 h-14 flex items-center justify-center rounded-xl border-2 border-amber-500/50 bg-black/50 hover:bg-amber-500/20 hover:border-amber-400 transition-all duration-300 hover:scale-110 p-2.5"
               aria-label={social.name}
             >

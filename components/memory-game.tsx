@@ -33,7 +33,8 @@ interface LeaderboardEntry {
   nickname: string
   moves: number
   created_at: string
-  wallet?: string // Added optional wallet field
+  wallet?: string
+  claim_code?: string // Added claim_code for security
 }
 
 export function MemoryGame() {
@@ -57,6 +58,9 @@ export function MemoryGame() {
   const [envVarsMissing, setEnvVarsMissing] = useState(false)
   const [editingWalletId, setEditingWalletId] = useState<string | null>(null) // Added state for editing wallet on existing entries
   const [editWalletValue, setEditWalletValue] = useState("") // Added state for editing wallet on existing entries
+  const [editClaimCode, setEditClaimCode] = useState("") // Added state for claim code verification
+  const [claimCodeError, setClaimCodeError] = useState<string | null>(null) // Added state for claim code errors
+  const [generatedClaimCode, setGeneratedClaimCode] = useState<string | null>(null) // Added state to store generated claim code
 
   useEffect(() => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -191,6 +195,11 @@ export function MemoryGame() {
 
   useEffect(() => {
     if (matchedPairs === 6 && moves > 0) {
+      if (moves <= 8) {
+        // Generate a unique claim code (6 character alphanumeric)
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase()
+        setGeneratedClaimCode(code)
+      }
       setTimeout(() => {
         setShowNicknameModal(true)
       }, 500)
@@ -238,8 +247,13 @@ export function MemoryGame() {
     }
   }
 
-  const saveToLeaderboard = async (playerNickname: string, playerMoves: number, playerWallet?: string) => {
-    // Added optional wallet parameter
+  const saveToLeaderboard = async (
+    playerNickname: string,
+    playerMoves: number,
+    playerWallet?: string,
+    claimCode?: string,
+  ) => {
+    // Added claimCode parameter
     if (!supabase || !isDatabaseReady) {
       console.log("[v0] Database not ready, skipping save")
       setShowNicknameModal(false)
@@ -250,6 +264,10 @@ export function MemoryGame() {
       const insertData: any = {
         nickname: playerNickname,
         moves: playerMoves,
+      }
+
+      if (playerMoves <= 8 && claimCode) {
+        insertData.claim_code = claimCode
       }
 
       if (playerWallet && playerWallet.trim()) {
@@ -270,17 +288,37 @@ export function MemoryGame() {
     }
   }
 
-  const updateWalletForEntry = async (entryId: string, walletAddress: string) => {
+  const updateWalletForEntry = async (entryId: string, walletAddress: string, claimCode: string) => {
     if (!supabase || !isDatabaseReady) {
       console.log("[v0] Database not ready, skipping update")
       return
     }
 
     try {
+      // First, verify the claim code matches
+      const { data: entry, error: fetchError } = await supabase
+        .from("leaderboard")
+        .select("claim_code")
+        .eq("id", entryId)
+        .single()
+
+      if (fetchError) {
+        console.error("[v0] Error fetching entry:", fetchError)
+        setClaimCodeError("Failed to verify claim code")
+        return
+      }
+
+      if (!entry || entry.claim_code !== claimCode.trim()) {
+        setClaimCodeError("Invalid claim code. Only the original player can add their wallet.")
+        return
+      }
+
+      // Claim code is valid, update the wallet
       const { error } = await supabase.from("leaderboard").update({ wallet: walletAddress.trim() }).eq("id", entryId)
 
       if (error) {
         console.error("[v0] Error updating wallet:", error)
+        setClaimCodeError("Failed to update wallet")
         return
       }
 
@@ -288,8 +326,11 @@ export function MemoryGame() {
       await fetchLeaderboard()
       setEditingWalletId(null)
       setEditWalletValue("")
+      setEditClaimCode("")
+      setClaimCodeError(null)
     } catch (error) {
       console.error("[v0] Error updating wallet:", error)
+      setClaimCodeError("An error occurred")
     }
   }
 
@@ -392,10 +433,11 @@ export function MemoryGame() {
   const handleNicknameSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (nickname.trim()) {
-      await saveToLeaderboard(nickname, moves, moves <= 8 ? wallet : undefined)
+      await saveToLeaderboard(nickname, moves, moves <= 8 ? wallet : undefined, generatedClaimCode || undefined) // Pass claim code
       setShowNicknameModal(false)
       setNickname("")
       setWallet("")
+      setGeneratedClaimCode(null) // Clear claim code after saving
     }
   }
 
@@ -477,39 +519,56 @@ export function MemoryGame() {
                         <span className="text-xs text-purple-400 font-mono truncate" title={entry.wallet}>
                           {entry.wallet}
                         </span>
-                      ) : entry.moves <= 8 ? (
+                      ) : entry.moves <= 8 && entry.claim_code ? (
                         editingWalletId === entry.id ? (
-                          <div className="flex gap-2 mt-1">
+                          <div className="flex flex-col gap-2 mt-1">
+                            <input
+                              type="text"
+                              value={editClaimCode}
+                              onChange={(e) => {
+                                setEditClaimCode(e.target.value)
+                                setClaimCodeError(null)
+                              }}
+                              placeholder="Enter your claim code"
+                              className="px-2 py-1 text-xs bg-background/50 border border-amber-400/30 rounded text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono uppercase"
+                              maxLength={6}
+                            />
                             <input
                               type="text"
                               value={editWalletValue}
                               onChange={(e) => setEditWalletValue(e.target.value)}
                               placeholder="Wallet address"
-                              className="flex-1 px-2 py-1 text-xs bg-background/50 border border-purple-400/30 rounded text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 font-mono"
-                              autoFocus
+                              className="px-2 py-1 text-xs bg-background/50 border border-purple-400/30 rounded text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 font-mono"
                             />
-                            <button
-                              onClick={() => updateWalletForEntry(entry.id, editWalletValue)}
-                              disabled={!editWalletValue.trim()}
-                              className="px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => {
-                                setEditingWalletId(null)
-                                setEditWalletValue("")
-                              }}
-                              className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-                            >
-                              Cancel
-                            </button>
+                            {claimCodeError && <span className="text-xs text-red-400">{claimCodeError}</span>}
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => updateWalletForEntry(entry.id, editWalletValue, editClaimCode)}
+                                disabled={!editWalletValue.trim() || !editClaimCode.trim()}
+                                className="px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingWalletId(null)
+                                  setEditWalletValue("")
+                                  setEditClaimCode("")
+                                  setClaimCodeError(null)
+                                }}
+                                className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           </div>
                         ) : (
                           <button
                             onClick={() => {
                               setEditingWalletId(entry.id)
                               setEditWalletValue("")
+                              setEditClaimCode("")
+                              setClaimCodeError(null)
                             }}
                             className="text-xs text-purple-400 hover:text-purple-300 transition-colors text-left mt-1"
                           >
@@ -606,6 +665,17 @@ export function MemoryGame() {
                 <p className="text-gray-300 text-xs text-center mt-1">
                   You can add your wallet address to the leaderboard!
                 </p>
+                {generatedClaimCode && (
+                  <div className="mt-3 p-2 bg-background/50 border border-amber-400/30 rounded">
+                    <p className="text-xs text-gray-400 text-center mb-1">Your Claim Code (save this!):</p>
+                    <p className="text-lg font-bold text-amber-400 text-center font-mono tracking-wider">
+                      {generatedClaimCode}
+                    </p>
+                    <p className="text-xs text-gray-400 text-center mt-1">
+                      You'll need this code to add your wallet later
+                    </p>
+                  </div>
+                )}
               </div>
             )}
             <h3 className="text-3xl font-bold text-amber-400 mb-4 text-center">Congratulations!</h3>
@@ -656,6 +726,7 @@ export function MemoryGame() {
                     setShowNicknameModal(false)
                     setNickname("")
                     setWallet("")
+                    setGeneratedClaimCode(null)
                     initializeGame()
                   }}
                   className="px-6 py-3 bg-gray-700 text-white font-bold rounded-full hover:bg-gray-600 transition-colors"

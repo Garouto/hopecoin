@@ -125,9 +125,15 @@ export function HeroSection() {
             <a href="#tokenomics" className="text-foreground hover:text-[#ffcc4d] transition-colors">
               Tokenomics
             </a>
-            <Button className="bg-[#f5f5f0] text-[#0a0a0f] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-8">
-              BUY NOW
-            </Button>
+            <a
+              href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="bg-[#f5f5f0] text-[#0a0a0f] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-8">
+                BUY NOW
+              </Button>
+            </a>
           </nav>
         </header>
 
@@ -155,12 +161,16 @@ export function HeroSection() {
               >
                 Tokenomics
               </a>
-              <Button
+              <a
+                href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-[#f5f5f0] text-[#0a0a0f] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-12 py-6 text-xl mt-4"
               >
-                BUY NOW
-              </Button>
+                <Button className="bg-[#f5f5f0] text-[#0a0a0f] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-12 py-6 text-xl mt-4">
+                  BUY NOW
+                </Button>
+              </a>
             </nav>
           </div>
         )}
@@ -181,9 +191,15 @@ export function HeroSection() {
                 <p className="text-2xl sm:text-3xl font-bold text-[#ffcc4d]">RAYDIUM</p>
               </div>
 
-              <Button className="bg-[#0a0a0f] text-[#f5f5f0] border-2 border-[#ffcc4d] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-10 py-5 text-base">
-                BUY NOW
-              </Button>
+              <a
+                href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-[#0a0a0f] text-[#f5f5f0] border-2 border-[#ffcc4d] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-10 py-5 text-base">
+                  BUY NOW
+                </Button>
+              </a>
             </div>
 
             {/* Tagline */}
@@ -237,7 +253,7 @@ export function HeroSection() {
                 />
               </a>
               <a
-                href="https://www.dextools.io/app/en/meme-board"
+                href="https://www.dextools.io/app/en/solana/pair-explorer/8KgWm5DMLiXvxn5J7TxzKfUvuzq6RonS3eAd9H9jnqHn?t=1762217989193"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -245,6 +261,20 @@ export function HeroSection() {
                 <Image
                   src="/images/design-mode/dextools.png"
                   alt="DexTools"
+                  width={24}
+                  height={24}
+                  className="w-full h-full object-contain"
+                />
+              </a>
+              <a
+                href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
+              >
+                <Image
+                  src="/images/design-mode/raydium.jpg"
+                  alt="Raydium"
                   width={24}
                   height={24}
                   className="w-full h-full object-contain"
@@ -320,7 +350,7 @@ export function HeroSection() {
                   />
                 </a>
                 <a
-                  href="https://www.dextools.io/app/en/meme-board"
+                  href="https://www.dextools.io/app/en/solana/pair-explorer/8KgWm5DMLiXvxn5J7TxzKfUvuzq6RonS3eAd9H9jnqHn?t=1762217989193"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -328,6 +358,20 @@ export function HeroSection() {
                   <Image
                     src="/images/design-mode/dextools.png"
                     alt="DexTools"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-contain"
+                  />
+                </a>
+                <a
+                  href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
+                >
+                  <Image
+                    src="/images/design-mode/raydium.jpg"
+                    alt="Raydium"
                     width={24}
                     height={24}
                     className="w-full h-full object-contain"
@@ -354,9 +398,15 @@ export function HeroSection() {
                 <p className="text-4xl font-bold text-[#ffcc4d]">RAYDIUM</p>
               </div>
 
-              <Button className="bg-[#0a0a0f] text-[#f5f5f0] border-2 border-[#ffcc4d] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-12 py-6 text-lg">
-                BUY NOW
-              </Button>
+              <a
+                href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-[#0a0a0f] text-[#f5f5f0] border-2 border-[#ffcc4d] hover:bg-[#ffcc4d] hover:text-[#0a0a0f] font-bold px-12 py-6 text-lg">
+                  BUY NOW
+                </Button>
+              </a>
             </div>
           </div>
         </div>

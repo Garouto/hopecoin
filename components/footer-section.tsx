@@ -24,7 +24,12 @@ export function FooterSection() {
     {
       name: "DexTools",
       icon: "/images/design-mode/dextools.png",
-      url: "https://www.dextools.io/app/en/meme-board",
+      url: "https://www.dextools.io/app/en/solana/pair-explorer/8KgWm5DMLiXvxn5J7TxzKfUvuzq6RonS3eAd9H9jnqHn?t=1762217989193",
+    },
+    {
+      name: "Raydium",
+      icon: "/images/design-mode/raydium.jpg",
+      url: "https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol",
     },
   ]
 
@@ -92,12 +97,18 @@ export function FooterSection() {
 
         {/* CTA Button */}
         <div className="mb-12">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-amber-200 to-amber-100 hover:from-amber-300 hover:to-amber-200 text-black font-bold text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-amber-500/50 transition-all duration-300"
+          <a
+            href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            BUY NOW
-          </Button>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-amber-200 to-amber-100 hover:from-amber-300 hover:to-amber-200 text-black font-bold text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-amber-500/50 transition-all duration-300"
+            >
+              BUY NOW
+            </Button>
+          </a>
         </div>
 
         {/* Social Icons */}

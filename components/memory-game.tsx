@@ -33,6 +33,7 @@ interface LeaderboardEntry {
   nickname: string
   moves: number
   created_at: string
+  wallet?: string // Added optional wallet field
 }
 
 export function MemoryGame() {
@@ -47,6 +48,7 @@ export function MemoryGame() {
   const [audioUnlocked, setAudioUnlocked] = useState(false)
   const [showNicknameModal, setShowNicknameModal] = useState(false)
   const [nickname, setNickname] = useState("")
+  const [wallet, setWallet] = useState("") // Added wallet state
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [isDatabaseReady, setIsDatabaseReady] = useState(false)
@@ -234,7 +236,8 @@ export function MemoryGame() {
     }
   }
 
-  const saveToLeaderboard = async (playerNickname: string, playerMoves: number) => {
+  const saveToLeaderboard = async (playerNickname: string, playerMoves: number, playerWallet?: string) => {
+    // Added optional wallet parameter
     if (!supabase || !isDatabaseReady) {
       console.log("[v0] Database not ready, skipping save")
       setShowNicknameModal(false)
@@ -242,10 +245,16 @@ export function MemoryGame() {
     }
 
     try {
-      const { error } = await supabase.from("leaderboard").insert({
+      const insertData: any = {
         nickname: playerNickname,
         moves: playerMoves,
-      })
+      }
+
+      if (playerWallet && playerWallet.trim()) {
+        insertData.wallet = playerWallet.trim()
+      }
+
+      const { error } = await supabase.from("leaderboard").insert(insertData)
 
       if (error) {
         console.error("[v0] Error saving to leaderboard:", error)
@@ -358,8 +367,10 @@ export function MemoryGame() {
   const handleNicknameSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (nickname.trim()) {
-      await saveToLeaderboard(nickname, moves)
+      await saveToLeaderboard(nickname, moves, moves === 8 ? wallet : undefined)
       setShowNicknameModal(false)
+      setNickname("") // Reset nickname
+      setWallet("") // Reset wallet
     }
   }
 
@@ -421,9 +432,9 @@ export function MemoryGame() {
                   key={entry.id}
                   className="flex items-center justify-between bg-background/50 rounded-lg p-3 border border-amber-400/20"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
                     <span
-                      className={`text-lg font-bold ${
+                      className={`text-lg font-bold flex-shrink-0 ${
                         index === 0
                           ? "text-amber-400"
                           : index === 1
@@ -435,9 +446,16 @@ export function MemoryGame() {
                     >
                       #{index + 1}
                     </span>
-                    <span className="text-white font-medium">{entry.nickname}</span>
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-white font-medium">{entry.nickname}</span>
+                      {entry.wallet && (
+                        <span className="text-xs text-purple-400 font-mono truncate" title={entry.wallet}>
+                          {entry.wallet}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-amber-400 font-bold">{entry.moves} moves</div>
+                  <div className="text-amber-400 font-bold flex-shrink-0">{entry.moves} moves</div>
                 </div>
               ))}
             </div>
@@ -518,6 +536,14 @@ export function MemoryGame() {
       {showNicknameModal && isDatabaseReady && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-gradient-to-br from-purple-900/90 to-background border-2 border-amber-400 rounded-2xl p-8 max-w-md w-full animate-fade-in">
+            {moves === 8 && (
+              <div className="mb-4 p-3 bg-gradient-to-r from-amber-400/20 to-purple-500/20 border border-amber-400/50 rounded-lg">
+                <p className="text-amber-400 font-bold text-center text-sm">🎉 PERFECT SCORE! 🎉</p>
+                <p className="text-gray-300 text-xs text-center mt-1">
+                  You can add your wallet address to the leaderboard!
+                </p>
+              </div>
+            )}
             <h3 className="text-3xl font-bold text-amber-400 mb-4 text-center">Congratulations!</h3>
             <p className="text-white text-center mb-2">You completed the game in</p>
             <p className="text-4xl font-bold text-amber-400 text-center mb-6">{moves} moves</p>
@@ -537,18 +563,35 @@ export function MemoryGame() {
                   autoFocus
                 />
               </div>
+              {moves === 8 && (
+                <div>
+                  <label htmlFor="wallet" className="block text-gray-300 mb-2 text-sm">
+                    Wallet address (optional):
+                  </label>
+                  <input
+                    type="text"
+                    id="wallet"
+                    value={wallet}
+                    onChange={(e) => setWallet(e.target.value)}
+                    placeholder="Your Solana wallet address"
+                    className="w-full px-4 py-3 bg-background/50 border border-purple-400/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 transition-colors font-mono text-sm"
+                  />
+                </div>
+              )}
               <div className="flex gap-3">
                 <button
                   type="submit"
                   disabled={!nickname.trim()}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-background font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-amber-400/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  Save Score
+                  Save to Ranking
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setShowNicknameModal(false)
+                    setNickname("") // Reset nickname
+                    setWallet("") // Reset wallet
                     initializeGame()
                   }}
                   className="px-6 py-3 bg-gray-700 text-white font-bold rounded-full hover:bg-gray-600 transition-colors"

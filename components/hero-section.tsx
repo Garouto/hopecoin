@@ -195,7 +195,7 @@ export function HeroSection() {
             {/* Social icons */}
             <div className="flex gap-3 justify-center">
               <a
-                href="https://x.com/home"
+                href="https://x.com/i/communities/1985170653184450945"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -209,7 +209,7 @@ export function HeroSection() {
                 />
               </a>
               <a
-                href="https://t.me/hopecoin"
+                href="https://t.me/hopecoinportal"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -223,7 +223,7 @@ export function HeroSection() {
                 />
               </a>
               <a
-                href="https://dexscreener.com/"
+                href="https://dexscreener.com/solana/8KgWm5DMLiXvxn5J7TxzKfUvuzq6RonS3eAd9H9jnqHn"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -250,7 +250,6 @@ export function HeroSection() {
                   className="w-full h-full object-contain"
                 />
               </a>
-              
             </div>
 
             {/* Logo - larger on mobile */}
@@ -279,7 +278,7 @@ export function HeroSection() {
               {/* Social icons */}
               <div className="flex gap-4">
                 <a
-                  href="https://x.com/home"
+                  href="https://x.com/i/communities/1985170653184450945"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -293,7 +292,7 @@ export function HeroSection() {
                   />
                 </a>
                 <a
-                  href="https://t.me/hopecoin"
+                  href="https://t.me/hopecoinportal"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -307,7 +306,7 @@ export function HeroSection() {
                   />
                 </a>
                 <a
-                  href="https://dexscreener.com/"
+                  href="https://dexscreener.com/solana/8KgWm5DMLiXvxn5J7TxzKfUvuzq6RonS3eAd9H9jnqHn"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
@@ -334,7 +333,6 @@ export function HeroSection() {
                     className="w-full h-full object-contain"
                   />
                 </a>
-                
               </div>
             </div>
 

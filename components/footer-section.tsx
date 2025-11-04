@@ -9,17 +9,17 @@ export function FooterSection() {
     {
       name: "Twitter",
       icon: "/images/design-mode/twitter.png",
-      url: "https://x.com/home",
+      url: "https://x.com/i/communities/1985170653184450945",
     },
     {
       name: "Telegram",
       icon: "/images/design-mode/telegram.png",
-      url: "https://t.me/",
+      url: "https://t.me/hopecoinportal",
     },
     {
       name: "DexScreener",
       icon: "/images/design-mode/dexscreener.png",
-      url: "https://dexscreener.com/",
+      url: "https://dexscreener.com/solana/8KgWm5DMLiXvxn5J7TxzKfUvuzq6RonS3eAd9H9jnqHn",
     },
     {
       name: "DexTools",

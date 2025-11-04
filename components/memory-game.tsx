@@ -55,6 +55,8 @@ export function MemoryGame() {
   const [databaseError, setDatabaseError] = useState<string | null>(null)
   const [supabase, setSupabase] = useState<any>(null)
   const [envVarsMissing, setEnvVarsMissing] = useState(false)
+  const [editingWalletId, setEditingWalletId] = useState<string | null>(null) // Added state for editing wallet on existing entries
+  const [editWalletValue, setEditWalletValue] = useState("") // Added state for editing wallet on existing entries
 
   useEffect(() => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -268,6 +270,29 @@ export function MemoryGame() {
     }
   }
 
+  const updateWalletForEntry = async (entryId: string, walletAddress: string) => {
+    if (!supabase || !isDatabaseReady) {
+      console.log("[v0] Database not ready, skipping update")
+      return
+    }
+
+    try {
+      const { error } = await supabase.from("leaderboard").update({ wallet: walletAddress.trim() }).eq("id", entryId)
+
+      if (error) {
+        console.error("[v0] Error updating wallet:", error)
+        return
+      }
+
+      console.log("[v0] Wallet updated successfully!")
+      await fetchLeaderboard()
+      setEditingWalletId(null)
+      setEditWalletValue("")
+    } catch (error) {
+      console.error("[v0] Error updating wallet:", error)
+    }
+  }
+
   const initializeGame = () => {
     console.log("[v0] Initializing game")
     const pairs = gameImages.slice(0, 6)
@@ -367,10 +392,10 @@ export function MemoryGame() {
   const handleNicknameSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (nickname.trim()) {
-      await saveToLeaderboard(nickname, moves, moves === 8 ? wallet : undefined)
+      await saveToLeaderboard(nickname, moves, moves <= 8 ? wallet : undefined)
       setShowNicknameModal(false)
-      setNickname("") // Reset nickname
-      setWallet("") // Reset wallet
+      setNickname("")
+      setWallet("")
     }
   }
 
@@ -448,11 +473,50 @@ export function MemoryGame() {
                     </span>
                     <div className="flex flex-col min-w-0 flex-1">
                       <span className="text-white font-medium">{entry.nickname}</span>
-                      {entry.wallet && (
+                      {entry.wallet ? (
                         <span className="text-xs text-purple-400 font-mono truncate" title={entry.wallet}>
                           {entry.wallet}
                         </span>
-                      )}
+                      ) : entry.moves <= 8 ? (
+                        editingWalletId === entry.id ? (
+                          <div className="flex gap-2 mt-1">
+                            <input
+                              type="text"
+                              value={editWalletValue}
+                              onChange={(e) => setEditWalletValue(e.target.value)}
+                              placeholder="Wallet address"
+                              className="flex-1 px-2 py-1 text-xs bg-background/50 border border-purple-400/30 rounded text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 font-mono"
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => updateWalletForEntry(entry.id, editWalletValue)}
+                              disabled={!editWalletValue.trim()}
+                              className="px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingWalletId(null)
+                                setEditWalletValue("")
+                              }}
+                              className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setEditingWalletId(entry.id)
+                              setEditWalletValue("")
+                            }}
+                            className="text-xs text-purple-400 hover:text-purple-300 transition-colors text-left mt-1"
+                          >
+                            + Add Wallet
+                          </button>
+                        )
+                      ) : null}
                     </div>
                   </div>
                   <div className="text-amber-400 font-bold flex-shrink-0">{entry.moves} moves</div>
@@ -536,7 +600,7 @@ export function MemoryGame() {
       {showNicknameModal && isDatabaseReady && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-gradient-to-br from-purple-900/90 to-background border-2 border-amber-400 rounded-2xl p-8 max-w-md w-full animate-fade-in">
-            {moves === 8 && (
+            {moves <= 8 && (
               <div className="mb-4 p-3 bg-gradient-to-r from-amber-400/20 to-purple-500/20 border border-amber-400/50 rounded-lg">
                 <p className="text-amber-400 font-bold text-center text-sm">🎉 PERFECT SCORE! 🎉</p>
                 <p className="text-gray-300 text-xs text-center mt-1">
@@ -563,7 +627,7 @@ export function MemoryGame() {
                   autoFocus
                 />
               </div>
-              {moves === 8 && (
+              {moves <= 8 && (
                 <div>
                   <label htmlFor="wallet" className="block text-gray-300 mb-2 text-sm">
                     Wallet address (optional):
@@ -590,8 +654,8 @@ export function MemoryGame() {
                   type="button"
                   onClick={() => {
                     setShowNicknameModal(false)
-                    setNickname("") // Reset nickname
-                    setWallet("") // Reset wallet
+                    setNickname("")
+                    setWallet("")
                     initializeGame()
                   }}
                   className="px-6 py-3 bg-gray-700 text-white font-bold rounded-full hover:bg-gray-600 transition-colors"

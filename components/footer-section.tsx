@@ -114,22 +114,7 @@ export function FooterSection() {
         {/* Social Icons */}
         <div className="flex justify-center gap-4 mb-12">
           {socialLinks.map((social) => (
-            <Link
-              key={social.name}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-14 h-14 flex items-center justify-center rounded-xl border-2 border-amber-500/50 bg-black/50 hover:bg-amber-500/20 hover:border-amber-400 transition-all duration-300 hover:scale-110 p-2.5"
-              aria-label={social.name}
-            >
-              <Image
-                src={social.icon || "/placeholder.svg"}
-                alt={social.name}
-                width={24}
-                height={24}
-                className="w-full h-full object-contain"
-              />
-            </Link>
+            null
           ))}
         </div>
 

@@ -65,12 +65,9 @@ export function MemoryGame() {
     })
 
     if (!supabaseUrl || !supabaseKey) {
-      console.error("[v0] Supabase environment variables are missing!")
+      console.log("[v0] Supabase not configured - leaderboard features disabled")
       setEnvVarsMissing(true)
       setIsDatabaseReady(false)
-      setDatabaseError(
-        "Supabase environment variables not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Vercel project settings.",
-      )
       return
     }
 
@@ -79,7 +76,7 @@ export function MemoryGame() {
       console.log("[v0] Supabase client created successfully")
       setSupabase(client)
     } else {
-      console.error("[v0] Failed to create Supabase client")
+      console.log("[v0] Supabase client not available")
       setEnvVarsMissing(true)
       setIsDatabaseReady(false)
     }
@@ -405,19 +402,6 @@ export function MemoryGame() {
             >
               {showLeaderboard ? "Hide" : "Show"} Leaderboard
             </button>
-          )}
-          {envVarsMissing && (
-            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg max-w-md mx-auto">
-              <p className="text-red-400 text-sm font-bold mb-2">🚨 Configuration Required</p>
-              <p className="text-gray-300 text-xs mb-2">
-                Supabase environment variables are not configured in your Vercel deployment.
-              </p>
-              <p className="text-gray-400 text-xs">Add these variables in your Vercel project settings:</p>
-              <ul className="text-left text-xs text-amber-400 mt-2 space-y-1">
-                <li>• NEXT_PUBLIC_SUPABASE_URL</li>
-                <li>• NEXT_PUBLIC_SUPABASE_ANON_KEY</li>
-              </ul>
-            </div>
           )}
           {databaseError && !envVarsMissing && (
             <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg max-w-md mx-auto">

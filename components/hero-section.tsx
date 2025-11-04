@@ -363,20 +363,7 @@ export function HeroSection() {
                     className="w-full h-full object-contain"
                   />
                 </a>
-                <a
-                  href="https://raydium.io/swap/?inputMint=FGtcp1HSnH6Ep8KfGCWusuF9YHdvkm873hLw4D6rpump&outputMint=sol"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-lg border-2 border-[#ffcc4d] flex items-center justify-center hover:bg-[#ffcc4d] transition-colors p-2.5"
-                >
-                  <Image
-                    src="/images/design-mode/raydium.jpg"
-                    alt="Raydium"
-                    width={24}
-                    height={24}
-                    className="w-full h-full object-contain"
-                  />
-                </a>
+                
               </div>
             </div>
 
